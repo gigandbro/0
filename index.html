@@ -1,180 +1,108 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>🌍 Игра: Страна и Номер</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #000;
-            color: #fff;
-            text-align: center;
-            min-height: 100vh;
-        }
+<script>
+    const countries = [
+        { name: "Уганда 🇺🇬", capital: "Кампала", population: "47 млн" },
+        { name: "Казахстан 🇰🇿", capital: "Астана", population: "19 млн" },
+        { name: "США 🇺🇸", capital: "Вашингтон", population: "333 млн" },
+        { name: "Франция 🇫🇷", capital: "Париж", population: "68 млн" },
+        { name: "Швейцария 🇨🇭", capital: "Берн", population: "8.7 млн" },
+        { name: "Япония 🇯🇵", capital: "Токио", population: "125 млн" },
+        { name: "Германия 🇩🇪", capital: "Берлин", population: "83 млн" },
+        { name: "Великобритания 🇬🇧", capital: "Лондон", population: "67 млн" },
+        { name: "Швеция 🇸🇪", capital: "Стокгольм", population: "10.5 млн" },
+        { name: "Китай 🇨🇳", capital: "Пекин", population: "1.41 млрд" },
+        { name: "Россия 🇷🇺", capital: "Москва", population: "146 млн" },
+        { name: "Нигер 🇳🇪", capital: "Ниамей", population: "27 млн" },
+        { name: "Беларусь 🇧🇾", capital: "Минск", population: "9.3 млн" },
+        { name: "Бразилия 🇧🇷", capital: "Бразилиа", population: "215 млн" },
+        { name: "Индия 🇮🇳", capital: "Нью-Дели", population: "1.42 млрд" },
+        { name: "Конго 🇨🇬", capital: "Браззавиль", population: "6 млн" }
+    ];
 
-        h1 {
-            font-size: 36px;
-            margin: 30px 0;
-            background: linear-gradient(270deg, red, orange, yellow, green, cyan, blue, violet, red);
-            background-size: 1000% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbow 10s linear infinite;
-        }
+    const usedCountries = JSON.parse(localStorage.getItem("usedCountries") || "[]");
+    const usedNumbers = JSON.parse(localStorage.getItem("usedNumbers") || "[]");
 
-        @keyframes rainbow {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
+    let playerNumber = JSON.parse(localStorage.getItem("playerNumber"));
+    let playerCountry = JSON.parse(localStorage.getItem("playerCountry"));
 
-        .button {
-            padding: 12px 28px;
-            margin: 10px;
-            font-size: 18px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 15px #000;
-        }
-
-        #getNumberBtn {
-            background-color: #000;
-            color: #00ff73;
-            border: 2px solid #00ff73;
-        }
-
-        #getNumberBtn:hover {
-            background: linear-gradient(to right, #00ff73, #00c853);
-            color: #000;
-            box-shadow: 0 0 20px #00ff73;
-        }
-
-        #deleteBtn {
-            background-color: #000;
-            color: #ff4d4d;
-            border: 2px solid #ff4d4d;
-        }
-
-        #deleteBtn:hover {
-            background: linear-gradient(to right, #ff4d4d, #ff1744);
-            color: #000;
-            box-shadow: 0 0 20px #ff4d4d;
-        }
-
-        #playerInfo {
-            font-size: 20px;
-            margin-top: 30px;
-            white-space: pre-line;
-            line-height: 1.7;
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 12px;
-            width: 80%;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        #message {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #ff8a80;
-        }
-    </style>
-</head>
-<body>
-    <h1>🌍 Получи уникальную страну и номер</h1>
-    <button class="button" id="getNumberBtn">🎲 Сгенерировать</button>
-    <button class="button" id="deleteBtn" disabled>🗑️ Удалить</button>
-
-    <div id="playerInfo"></div>
-    <div id="message"></div>
-
-    <script>
-        const countries = [
-            { name: "Уганда 🇺🇬", capital: "Кампала", population: "47 млн" },
-            { name: "Казахстан 🇰🇿", capital: "Астана", population: "19 млн" },
-            { name: "США 🇺🇸", capital: "Вашингтон", population: "333 млн" },
-            { name: "Франция 🇫🇷", capital: "Париж", population: "68 млн" },
-            { name: "Швейцария 🇨🇭", capital: "Берн", population: "8.7 млн" },
-            { name: "Япония 🇯🇵", capital: "Токио", population: "125 млн" },
-            { name: "Германия 🇩🇪", capital: "Берлин", population: "83 млн" },
-            { name: "Великобритания 🇬🇧", capital: "Лондон", population: "67 млн" },
-            { name: "Швеция 🇸🇪", capital: "Стокгольм", population: "10.5 млн" },
-            { name: "Китай 🇨🇳", capital: "Пекин", population: "1.41 млрд" },
-            { name: "Россия 🇷🇺", capital: "Москва", population: "146 млн" },
-            { name: "Нигер 🇳🇪", capital: "Ниамей", population: "27 млн" },
-            { name: "Беларусь 🇧🇾", capital: "Минск", population: "9.3 млн" },
-            { name: "Бразилия 🇧🇷", capital: "Бразилиа", population: "215 млн" },
-            { name: "Индия 🇮🇳", capital: "Нью-Дели", population: "1.42 млрд" },
-            { name: "Конго 🇨🇬", capital: "Браззавиль", population: "6 млн" }
-        ];
-
-        const usedCountries = [];
-        const usedNumbers = [];
-
-        let playerNumber = null;
-        let playerCountry = null;
-
-        function getRandomNumber() {
-            const availableNumbers = [];
-            for (let i = 1; i <= 1000; i++) {
-                if (!usedNumbers.includes(i)) availableNumbers.push(i);
-            }
-            if (availableNumbers.length === 0) return null;
-            return availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
-        }
-
-        function getRandomCountry() {
-            const available = countries.filter(c => !usedCountries.includes(c.name));
-            if (available.length === 0) return null;
-            return available[Math.floor(Math.random() * available.length)];
-        }
-
-        document.getElementById("getNumberBtn").onclick = () => {
-            const number = getRandomNumber();
-            const country = getRandomCountry();
-
-            if (!number || !country) {
-                document.getElementById("message").innerText = "😢 Все страны и номера уже заняты!";
-                return;
-            }
-
-            playerNumber = number;
-            playerCountry = country;
-
-            usedNumbers.push(number);
-            usedCountries.push(country.name);
-
+    function showPlayerInfo() {
+        if (playerNumber && playerCountry) {
             document.getElementById("playerInfo").innerText =
-                `📦 Номер: ${number}\n` +
-                `🌍 Страна: ${country.name}\n` +
-                `🏙️ Столица: ${country.capital}\n` +
-                `👥 Население: ${country.population}`;
-
+                `📦 Номер: ${playerNumber}\n` +
+                `🌍 Страна: ${playerCountry.name}\n` +
+                `🏙️ Столица: ${playerCountry.capital}\n` +
+                `👥 Население: ${playerCountry.population}`;
             document.getElementById("deleteBtn").disabled = false;
-            document.getElementById("message").innerText = "";
-        };
+        }
+    }
 
-        document.getElementById("deleteBtn").onclick = () => {
-            if (playerNumber !== null && playerCountry !== null) {
-                const indexNum = usedNumbers.indexOf(playerNumber);
-                if (indexNum !== -1) usedNumbers.splice(indexNum, 1);
+    function getRandomNumber() {
+        const availableNumbers = [];
+        for (let i = 1; i <= 1000; i++) {
+            if (!usedNumbers.includes(i)) availableNumbers.push(i);
+        }
+        if (availableNumbers.length === 0) return null;
+        return availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+    }
 
-                const indexCountry = usedCountries.indexOf(playerCountry.name);
-                if (indexCountry !== -1) usedCountries.splice(indexCountry, 1);
+    function getRandomCountry() {
+        const available = countries.filter(c => !usedCountries.includes(c.name));
+        if (available.length === 0) return null;
+        return available[Math.floor(Math.random() * available.length)];
+    }
 
-                playerNumber = null;
-                playerCountry = null;
+    document.getElementById("getNumberBtn").onclick = () => {
+        if (playerNumber && playerCountry) {
+            document.getElementById("message").innerText = "🎉 У вас уже есть роль!";
+            return;
+        }
 
-                document.getElementById("playerInfo").innerText = "";
-                document.getElementById("deleteBtn").disabled = true;
-                document.getElementById("message").innerText = "✅ Удалено. Можете начать заново.";
-            }
-        };
-    </script>
-</body>
-</html>
+        const number = getRandomNumber();
+        const country = getRandomCountry();
+
+        if (!number || !country) {
+            document.getElementById("message").innerText = "😢 Все страны и номера уже заняты!";
+            return;
+        }
+
+        playerNumber = number;
+        playerCountry = country;
+
+        usedNumbers.push(number);
+        usedCountries.push(country.name);
+
+        // Сохраняем в localStorage
+        localStorage.setItem("playerNumber", JSON.stringify(playerNumber));
+        localStorage.setItem("playerCountry", JSON.stringify(playerCountry));
+        localStorage.setItem("usedCountries", JSON.stringify(usedCountries));
+        localStorage.setItem("usedNumbers", JSON.stringify(usedNumbers));
+
+        showPlayerInfo();
+        document.getElementById("message").innerText = "";
+    };
+
+    document.getElementById("deleteBtn").onclick = () => {
+        if (playerNumber !== null && playerCountry !== null) {
+            const indexNum = usedNumbers.indexOf(playerNumber);
+            if (indexNum !== -1) usedNumbers.splice(indexNum, 1);
+
+            const indexCountry = usedCountries.indexOf(playerCountry.name);
+            if (indexCountry !== -1) usedCountries.splice(indexCountry, 1);
+
+            // Удаляем из localStorage
+            playerNumber = null;
+            playerCountry = null;
+            localStorage.removeItem("playerNumber");
+            localStorage.removeItem("playerCountry");
+            localStorage.setItem("usedCountries", JSON.stringify(usedCountries));
+            localStorage.setItem("usedNumbers", JSON.stringify(usedNumbers));
+
+            document.getElementById("playerInfo").innerText = "";
+            document.getElementById("deleteBtn").disabled = true;
+            document.getElementById("message").innerText = "✅ Удалено. Можете начать заново.";
+        }
+    };
+
+    // При загрузке страницы
+    showPlayerInfo();
+</script>
+
